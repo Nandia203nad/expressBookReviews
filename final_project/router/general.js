@@ -87,3 +87,20 @@ public_users.get('/review/:isbn', function (req, res) {
 module.exports = {
   general: public_users
 };
+public_users.get('/author/:author', async function (req, res) {
+    const author = req.params.author;
+    try {
+        // Таны Axios эсвэл Promise ложик энд байрлана
+        const booksByAuthor = await findBooksByAuthor(author); 
+        
+        if (booksByAuthor.length > 0) {
+            return res.status(200).json(booksByAuthor);
+        } else {
+            return res.status(404).json({ message: `No books found by author: ${author}` });
+        }
+    } catch (error) {
+        // Системийн зөвлөсөн Error Logging хэсэг:
+        console.error("Error fetching books by author:", error.message);
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+});
